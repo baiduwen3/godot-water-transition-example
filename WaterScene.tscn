@@ -1,0 +1,96 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Textures/Terrain/river_small_rocks_diff_2k.jpg" type="Texture" id=1]
+[ext_resource path="res://Textures/Terrain/river_small_rocks_rough_2k.jpg" type="Texture" id=2]
+[ext_resource path="res://Textures/Terrain/river_small_rocks_ao_2k.jpg" type="Texture" id=3]
+[ext_resource path="res://Textures/HDRI/T_SkyOnlyHDRI015.exr" type="Texture" id=4]
+[ext_resource path="res://Materials/M_OceanWater.tres" type="Material" id=5]
+[ext_resource path="res://Textures/Terrain/river_small_rocks_nor_gl_2k.jpg" type="Texture" id=6]
+[ext_resource path="res://FX/PostProcessingOverlay.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Controllable/Player.tscn" type="PackedScene" id=8]
+
+[sub_resource type="PanoramaSky" id=1]
+radiance_size = 4
+panorama = ExtResource( 4 )
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 1 )
+background_sky_orientation = Basis( 0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107 )
+ambient_light_color = Color( 0.0862745, 0.141176, 0.156863, 1 )
+ambient_light_energy = 2.0
+ambient_light_sky_contribution = 0.5
+tonemap_mode = 3
+tonemap_exposure = 1.75
+tonemap_white = 2.0
+
+[sub_resource type="PlaneMesh" id=5]
+material = ExtResource( 5 )
+size = Vector2( 100000, 100000 )
+subdivide_width = 1
+subdivide_depth = 1
+
+[sub_resource type="SphereMesh" id=9]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="CylinderMesh" id=10]
+height = 10.0
+
+[sub_resource type="SpatialMaterial" id=8]
+albedo_color = Color( 0.760784, 0.788235, 0.85098, 1 )
+albedo_texture = ExtResource( 1 )
+roughness_texture = ExtResource( 2 )
+normal_enabled = true
+normal_scale = 1.0
+normal_texture = ExtResource( 6 )
+ao_enabled = true
+ao_light_affect = 0.0
+ao_texture = ExtResource( 3 )
+ao_on_uv2 = false
+ao_texture_channel = 0
+uv1_scale = Vector3( 120, 120, 120 )
+
+[sub_resource type="PlaneMesh" id=6]
+material = SubResource( 8 )
+size = Vector2( 1000, 1000 )
+
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 500, 1, 500 )
+
+[node name="WaterScene" type="Spatial"]
+
+[node name="Player" parent="." instance=ExtResource( 8 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -3.961, 0.551994, 19.823 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( 0.707107, 0.235013, -0.66691, 0, 0.943153, 0.332359, 0.707107, -0.235013, 0.66691, 0, 5.71066, 0 )
+light_energy = 1.75
+shadow_enabled = true
+
+[node name="WaterPlaneMesh" type="MeshInstance" parent="."]
+mesh = SubResource( 5 )
+
+[node name="Sphere" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715648, -0.401382, 40.0192 )
+mesh = SubResource( 9 )
+
+[node name="Cylinder" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -14.8121, -1.73163, 38.5932 )
+mesh = SubResource( 10 )
+
+[node name="FakeTerrain" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 0, 0, 0 )
+mesh = SubResource( 6 )
+
+[node name="StaticBody" type="StaticBody" parent="FakeTerrain"]
+
+[node name="CollisionShape" type="CollisionShape" parent="FakeTerrain/StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+shape = SubResource( 7 )
+
+[node name="PostProcessingOverlay" parent="." instance=ExtResource( 7 )]
+player_path = NodePath("../Player")
