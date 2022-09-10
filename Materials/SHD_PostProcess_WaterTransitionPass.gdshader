@@ -22,7 +22,7 @@ void fragment()
 	// --> Fake Waves
 	float line_time = TIME * 2.5f;
 	float line_wave_freq = 8.0f;
-	float line_wave_amp = 0.004f;
+	float line_wave_amp = 0.003f;
 	float line_wave_offset = sin(line_time + SCREEN_UV.x * line_wave_freq) * line_wave_amp;
 	
 	// TODO Include camera rotation for additional wave offset.

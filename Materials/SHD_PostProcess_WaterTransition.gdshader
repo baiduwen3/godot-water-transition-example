@@ -5,7 +5,13 @@ shader_type canvas_item;
 
 uniform vec4 water_line_color : hint_color = vec4(0.1f, 0.25f, 0.4f, 1.0f);
 uniform vec4 underwater_color : hint_color = vec4(0.0f, 0.25f, 0.25f, 1.0f);
+uniform float underwater_blur_lod : hint_range(0.0f, 5.0f, 1.0f) = 3.0f;
+
+uniform sampler2D underwater_refraction_noise;
+
+// Masks
 uniform sampler2D water_transition_mask;
+//uniform sampler2D water_depth_mask;
 
 /**
  * Generate Water Line
@@ -55,8 +61,18 @@ void fragment()
 										  top_mask, bottom_mask, line_mask, refracted_uv);
 	
 	// --> Final Color
+	float underwater_refraction_time = TIME * 0.1f;
+	float underwater_refraction_intensity = 0.04f;
+	
+	vec2 underwater_refraction_uv = refracted_uv;
+	
+	underwater_refraction_uv += vec2(
+		0.0f,
+		texture(underwater_refraction_noise, SCREEN_UV + underwater_refraction_time).r - 0.5f // Fix y-offset.
+	) * underwater_refraction_intensity;
+	
 	vec4 screen_texture_over = textureLod(SCREEN_TEXTURE, refracted_uv, 0.0f);
-	vec4 screen_texture_under = textureLod(SCREEN_TEXTURE, refracted_uv, 3.0f);
+	vec4 screen_texture_under = textureLod(SCREEN_TEXTURE, underwater_refraction_uv, underwater_blur_lod);
 	
 	vec3 overwater_color = screen_texture_over.rgb * pow(top_mask, 2.0f);
 	
