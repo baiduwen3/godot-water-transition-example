@@ -10,7 +10,7 @@ All required code is rewritten in GDScript for this project (instead of C++). A 
 
 | Input         | Description               |
 |---------------|---------------------------|
-| W/A/S/D       | Mode player character.    |
+| W/A/S/D       | Move player character.    |
 | Mouse         | Look around.              |
 | Escape Key    | Exit game.                |
 | Alt + Enter   | Toggle fullscreen mode.   |
