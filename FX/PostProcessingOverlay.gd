@@ -16,11 +16,11 @@ func _ready():
 	player = get_node(player_path)
 
 # Process
-func _physics_process(_delta):
+func _process(_delta):
 	if (camera == null || player == null):
 		return
 	
-	if (!player._is_near_water()):
+	if (!player.is_near_water()):
 		hide()
 		return
 	

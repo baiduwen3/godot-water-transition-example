@@ -4,7 +4,6 @@
 extends KinematicBody
 
 onready var camera : Camera = $Camera
-
 onready var water_tp_viewport : Viewport = $WaterTransitionPass_Viewport
 onready var water_tp_camera : Camera = $WaterTransitionPass_Viewport/WaterTransitionPass_Camera
 onready var water_tp_rt : MeshInstance = $WaterTransitionPass_Viewport/WaterTransitionPass_Camera/WaterTransitionPass_RT
@@ -35,14 +34,22 @@ func _input(event):
 		camera.rotate_x(rot_x)
 		rotate_y(rot_y)
 		
+		# Clamp camera's vertical rotation.
 		var cam_rot = camera.get_rotation_degrees();
 		cam_rot.x = clamp(cam_rot.x, -90.0, 90.0);
 		camera.set_rotation_degrees(cam_rot);
 
+# Process
+func _process(_delta):
+	_apply_render_passes()
+
 # Physics Process
 func _physics_process(delta):
 	_apply_movement(delta)
-	_apply_render_passes()
+
+# Is Near Water?
+func is_near_water():
+	return global_translation.y < water_level + water_level_cam_threshold
 
 # Get Water Transition Mask
 func get_water_transition_mask():
@@ -85,13 +92,14 @@ func _apply_movement(delta):
 func _apply_render_passes():
 	
 	# Update
-	if (_is_near_water()):
+	if (is_near_water()):
 		
 		# Water Transition Pass
 		water_tp_camera.visible = true
 		water_tp_rt.visible = true
 		water_tp_viewport.render_target_clear_mode = Viewport.CLEAR_MODE_ONLY_NEXT_FRAME
 		water_tp_viewport.render_target_update_mode = Viewport.UPDATE_ALWAYS
+		
 		_apply_water_transition_pass();
 	
 	# Skip
@@ -121,7 +129,3 @@ func _apply_water_transition_pass():
 	water_pp_mat.set_shader_param("camera_near", camera.near)
 	water_pp_mat.set_shader_param("camera_position", camera_position)
 	water_pp_mat.set_shader_param("camera_direction_vector", camera_direction_vector)
-
-# Is Near Water?
-func _is_near_water():
-	return global_translation.y < water_level + water_level_cam_threshold

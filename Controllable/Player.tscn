@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Controllable/Player.gd" type="Script" id=1]
-[ext_resource path="res://Materials/M_PostProcess_WaterMask.tres" type="Material" id=2]
+[ext_resource path="res://Materials/M_PostProcess_WaterTransitionPass.tres" type="Material" id=2]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.75
@@ -48,6 +48,7 @@ render_target_update_mode = 3
 gui_disable_input = true
 
 [node name="WaterTransitionPass_Camera" type="Camera" parent="WaterTransitionPass_Viewport"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
 cull_mask = 32768
 near = 0.35
 far = 1.0

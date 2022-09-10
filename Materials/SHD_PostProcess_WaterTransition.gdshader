@@ -1,11 +1,15 @@
+// MIT License
+// Copyright (c) 2022 BIFRACTAL - Florian Roth
+
 shader_type canvas_item;
 
 uniform vec4 water_line_color : hint_color = vec4(0.1f, 0.25f, 0.4f, 1.0f);
 uniform vec4 underwater_color : hint_color = vec4(0.0f, 0.25f, 0.25f, 1.0f);
-
 uniform sampler2D water_transition_mask;
-uniform sampler2D water_depth_mask;
 
+/**
+ * Generate Water Line
+ */
 vec3 generate_water_line(vec2 screen_uv, float time,
 						 float water_transition_value, float line_thickness,
 						 inout float top_mask, inout float bottom_mask,
@@ -27,11 +31,17 @@ vec3 generate_water_line(vec2 screen_uv, float time,
 	return water_line_color.rgb * line;
 }
 
+
+/**
+ * Fragment Shader
+ */
 void fragment()
 {
+	// --> Masks
 	float water_transition_value = textureLod(water_transition_mask, SCREEN_UV, 0.0f).r;
-	//float water_depth_value = textureLod(water_depth_mask, SCREEN_UV, 0.0f).r;
 	float water_surface_mask = ceil(water_transition_value);
+
+	// TODO Underwater depth mask.
 	
 	// --> Water Line
 	float water_line_thickness = 0.24f;
@@ -55,12 +65,5 @@ void fragment()
 	color += water_line;
 	color *= underwater_color.rgb * (bottom_mask * 2.0f);
 	
-	// TODO Blurry depth color adjustment ...
-	//color *= vec3(clamp(1.0f - water_depth_value, 0.1f, 1.0f)) * bottom_mask;
-	
 	COLOR.rgb = overwater_color + color;
-	
-	// Depth Debug
-	//COLOR.a = 0.9f;
-	//COLOR.rgb = vec3(1.0f - water_depth_value);
 }

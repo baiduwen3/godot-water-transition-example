@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2022 BIFRACTAL - Florian Roth
+
 shader_type spatial;
 render_mode cull_disabled;
 
